@@ -2327,13 +2327,31 @@ footer {
 
 <!-- JavaScript -->
 <script>
+// Global error handler for debugging
+window.onerror = function(msg, url, lineNo, columnNo, error) {
+  console.error('JavaScript Error:', {
+    message: msg,
+    line: lineNo,
+    column: columnNo,
+    error: error
+  });
+  return false;
+};
+
+// Wrap everything in DOMContentLoaded to ensure DOM is ready
+document.addEventListener('DOMContentLoaded', function() {
+
+console.log('%c🕊️ Unity Through Rebuilding - Initializing...', 'font-size: 16px; font-weight: bold; color: #fbbf24;');
+
 /* ============================================================
    UNITY SPLASH CANVAS ANIMATION
    Particles flowing together representing unity
 ============================================================ */
+try {
 const unityCanvas = document.getElementById('unity-canvas');
 const unityCtx = unityCanvas ? unityCanvas.getContext('2d') : null;
 let unityParticles = [];
+let unityAnimationId = null;
 
 if (unityCanvas && unityCtx) {
   function resizeUnityCanvas() {
@@ -2463,10 +2481,13 @@ if (unityCanvas && unityCtx) {
       particle.draw();
     });
     
-    requestAnimationFrame(animateUnityCanvas);
+    unityAnimationId = requestAnimationFrame(animateUnityCanvas);
   }
   
   animateUnityCanvas();
+}
+} catch (error) {
+  console.error('Unity canvas error (non-critical):', error);
 }
 
 /* ============================================================
@@ -2558,6 +2579,15 @@ const badges = [
 
 let unlockedCount = 0;
 
+/* ============================================================
+   PROGRESS TRACKING - Initialize BEFORE achievement functions
+============================================================ */
+let progress = {
+  domainsExplored: new Set(),
+  toolsUsed: new Set(),
+  contributions: 0
+};
+
 function unlockBadge(badgeId) {
   const badge = badges.find(b => b.id === badgeId);
   if (badge && !badge.unlocked) {
@@ -2604,17 +2634,16 @@ document.getElementById('badges-btn').addEventListener('click', () => {
 });
 
 // First visit badge
-unlockBadge('first-visit');
+try {
+  unlockBadge('first-visit');
+  console.log('First visit badge unlocked');
+} catch (error) {
+  console.error('Error unlocking first badge:', error);
+}
 
 /* ============================================================
-   PROGRESS TRACKING
+   PROGRESS TRACKING FUNCTIONS
 ============================================================ */
-let progress = {
-  domainsExplored: new Set(),
-  toolsUsed: new Set(),
-  contributions: 0
-};
-
 function trackDomainVisit(domainId) {
   progress.domainsExplored.add(domainId);
   updateProgress();
@@ -2648,29 +2677,37 @@ function updateProgress() {
 }
 
 function saveProgress() {
-  localStorage.setItem('peaceweaver-progress', JSON.stringify({
-    domains: Array.from(progress.domainsExplored),
-    tools: Array.from(progress.toolsUsed),
-    contributions: progress.contributions,
-    badges: badges
-  }));
+  try {
+    localStorage.setItem('peaceweaver-progress', JSON.stringify({
+      domains: Array.from(progress.domainsExplored),
+      tools: Array.from(progress.toolsUsed),
+      contributions: progress.contributions,
+      badges: badges
+    }));
+  } catch (error) {
+    console.warn('Could not save progress to localStorage:', error);
+  }
 }
 
 function loadProgress() {
-  const saved = localStorage.getItem('peaceweaver-progress');
-  if (saved) {
-    const data = JSON.parse(saved);
-    progress.domainsExplored = new Set(data.domains || []);
-    progress.toolsUsed = new Set(data.tools || []);
-    progress.contributions = data.contributions || 0;
-    if (data.badges) {
-      data.badges.forEach((savedBadge, i) => {
-        if (badges[i]) badges[i].unlocked = savedBadge.unlocked;
-      });
-      unlockedCount = badges.filter(b => b.unlocked).length;
-      updateBadgeCount();
+  try {
+    const saved = localStorage.getItem('peaceweaver-progress');
+    if (saved) {
+      const data = JSON.parse(saved);
+      progress.domainsExplored = new Set(data.domains || []);
+      progress.toolsUsed = new Set(data.tools || []);
+      progress.contributions = data.contributions || 0;
+      if (data.badges) {
+        data.badges.forEach((savedBadge, i) => {
+          if (badges[i]) badges[i].unlocked = savedBadge.unlocked;
+        });
+        unlockedCount = badges.filter(b => b.unlocked).length;
+        updateBadgeCount();
+      }
+      updateProgress();
     }
-    updateProgress();
+  } catch (error) {
+    console.warn('Could not load progress from localStorage:', error);
   }
 }
 
@@ -3033,15 +3070,32 @@ document.querySelectorAll('#toc a').forEach(link => {
 /* ============================================================
    SPLASH SCREEN TRANSITION
 ============================================================ */
+try {
 const splashScreen = document.getElementById('splash');
 const mainApp = document.getElementById('app');
 const enterButton = document.getElementById('enter-btn');
 
+console.log('Splash elements:', { 
+  splashScreen: !!splashScreen, 
+  mainApp: !!mainApp, 
+  enterButton: !!enterButton 
+}); // Debug log
+
 if (enterButton && splashScreen && mainApp) {
-  enterButton.addEventListener('click', function() {
-    // Stop unity canvas animation
-    if (unityCanvas) {
-      unityParticles = [];
+  enterButton.addEventListener('click', function(e) {
+    e.preventDefault();
+    console.log('Enter button clicked!'); // Debug log
+    
+    try {
+      // Stop unity canvas animation
+      if (typeof unityAnimationId !== 'undefined' && unityAnimationId) {
+        cancelAnimationFrame(unityAnimationId);
+      }
+      if (typeof unityParticles !== 'undefined') {
+        unityParticles = [];
+      }
+    } catch (err) {
+      console.log('Error stopping animations (non-critical):', err);
     }
     
     // Add exit animation
@@ -3051,17 +3105,34 @@ if (enterButton && splashScreen && mainApp) {
     setTimeout(() => {
       splashScreen.style.display = 'none';
       mainApp.style.display = 'block';
+      
+      // Force reflow
+      mainApp.offsetHeight;
+      
       requestAnimationFrame(() => {
         mainApp.style.opacity = '1';
+        console.log('Main app should be visible now'); // Debug log
       });
     }, 1500);
   });
+  
+  console.log('Enter button listener attached successfully');
+} else {
+  console.error('Missing elements:', { enterButton, splashScreen, mainApp });
+}
+} catch (error) {
+  console.error('Splash screen initialization error:', error);
 }
 
 /* ============================================================
    INITIALIZATION
 ============================================================ */
-loadProgress();
+try {
+  loadProgress();
+  console.log('Progress loaded successfully');
+} catch (error) {
+  console.error('Error loading progress:', error);
+}
 
 console.log('%c🕊️ Unity Through Rebuilding - Ultimate Edition', 'font-size: 20px; font-weight: bold; color: #fbbf24;');
 console.log('%c🎨 Enhanced Splash Screen:', 'font-size: 14px; color: #6366f1;');
@@ -3080,6 +3151,10 @@ console.log('%c  • Progress tracking', 'color: #94a3b8;');
 console.log('%c  • Case studies & FAQs', 'color: #94a3b8;');
 console.log('%c  • Events calendar', 'color: #94a3b8;');
 console.log('%c🌍 Available in: English • Русский • Українська', 'font-size: 12px; color: #10b981;');
+
+console.log('%c✅ Platform initialized successfully!', 'font-size: 14px; font-weight: bold; color: #10b981;');
+
+}); // End DOMContentLoaded
 </script>
 
 </body>
