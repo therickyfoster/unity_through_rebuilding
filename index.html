@@ -106,12 +106,38 @@ body::before {
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: center;
+  justify-content: flex-start;
   text-align: center;
-  padding: 20px;
+  padding: 40px 20px 60px;
   transition: opacity 1.5s ease, transform 1.5s ease;
   z-index: 9999;
-  overflow: hidden;
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+
+/* Scroll indicator */
+#splash::after {
+  content: '↓';
+  position: fixed;
+  bottom: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 2rem;
+  color: var(--accent-gold);
+  opacity: 0.6;
+  animation: scrollBounce 2s ease-in-out infinite;
+  pointer-events: none;
+}
+
+@keyframes scrollBounce {
+  0%, 100% {
+    transform: translateX(-50%) translateY(0);
+    opacity: 0.6;
+  }
+  50% {
+    transform: translateX(-50%) translateY(10px);
+    opacity: 1;
+  }
 }
 
 /* Unity Canvas Background */
@@ -240,6 +266,10 @@ body::before {
   position: relative;
   z-index: 10;
   animation: contentFadeIn 2s ease-out forwards;
+  max-width: 1000px;
+  width: 100%;
+  margin: auto;
+  padding: 20px 0;
 }
 
 @keyframes contentFadeIn {
@@ -256,17 +286,17 @@ body::before {
 /* Unity Symbol - Two circles merging */
 .unity-symbol {
   position: relative;
-  width: 200px;
-  height: 100px;
-  margin: 20px auto 30px;
+  width: 160px;
+  height: 80px;
+  margin: 15px auto 20px;
   display: flex;
   align-items: center;
   justify-content: center;
 }
 
 .unity-circle {
-  width: 80px;
-  height: 80px;
+  width: 65px;
+  height: 65px;
   border-radius: 50%;
   position: absolute;
   border: 3px solid rgba(255, 255, 255, 0.6);
@@ -304,7 +334,7 @@ body::before {
 /* Bridge connecting circles */
 .unity-bridge-center {
   position: absolute;
-  width: 100px;
+  width: 80px;
   height: 4px;
   background: linear-gradient(90deg, 
     rgba(0, 87, 183, 0.6) 0%,
@@ -317,11 +347,11 @@ body::before {
 
 @keyframes bridgeGrow {
   0%, 100% {
-    width: 100px;
+    width: 80px;
     opacity: 0.6;
   }
   50% {
-    width: 120px;
+    width: 95px;
     opacity: 1;
   }
 }
@@ -349,11 +379,11 @@ body::before {
 }
 
 .splash-content h1 {
-  font-size: clamp(2.8rem, 5vw, 4.5rem);
+  font-size: clamp(2.2rem, 4.5vw, 3.8rem);
   font-weight: 800;
   letter-spacing: 0.1em;
   text-transform: uppercase;
-  margin-bottom: 20px;
+  margin-bottom: 15px;
   background: linear-gradient(135deg, var(--accent-gold), #f59e0b, var(--accent-gold));
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
@@ -367,24 +397,26 @@ body::before {
 }
 
 .splash-content .subtitle {
-  font-size: 1.1rem;
+  font-size: 1rem;
   max-width: 820px;
-  line-height: 1.8;
+  line-height: 1.7;
   opacity: 0.95;
   text-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
-  margin: 0 auto;
+  margin: 0 auto 20px;
 }
 
 /* Language Selection on Splash */
 .language-selection {
   margin-top: 50px;
   text-align: center;
+  width: 100%;
+  max-width: 900px;
 }
 
 .language-selection h3 {
   color: var(--accent-gold);
   font-size: 1.2rem;
-  margin-bottom: 30px;
+  margin-bottom: 40px;
   opacity: 0.9;
   letter-spacing: 0.02em;
 }
@@ -392,24 +424,24 @@ body::before {
 .language-buttons {
   display: flex;
   justify-content: center;
-  gap: 30px;
+  gap: 40px;
   flex-wrap: wrap;
 }
 
 .language-btn {
-  background: linear-gradient(135deg, rgba(99, 102, 241, 0.2), rgba(124, 58, 237, 0.2));
+  background: linear-gradient(135deg, rgba(99, 102, 241, 0.15), rgba(124, 58, 237, 0.15));
   border: 2px solid rgba(251, 191, 36, 0.3);
   border-radius: 20px;
-  padding: 25px 35px;
+  padding: 30px 25px;
   cursor: pointer;
   transition: all 0.4s ease;
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 12px;
-  min-width: 140px;
+  gap: 20px;
+  min-width: 180px;
   position: relative;
-  overflow: hidden;
+  overflow: visible;
   backdrop-filter: blur(10px);
   -webkit-backdrop-filter: blur(10px);
 }
@@ -422,6 +454,7 @@ body::before {
   opacity: 0;
   transition: opacity 0.4s ease;
   z-index: -1;
+  border-radius: 18px;
 }
 
 .language-btn:hover::before {
@@ -429,23 +462,197 @@ body::before {
 }
 
 .language-btn:hover {
-  transform: translateY(-5px) scale(1.05);
+  transform: translateY(-8px) scale(1.05);
   border-color: var(--accent-gold);
-  box-shadow: 0 0 40px rgba(251, 191, 36, 0.5), 0 10px 30px rgba(0, 0, 0, 0.4);
+  box-shadow: 0 0 40px rgba(251, 191, 36, 0.5), 0 15px 40px rgba(0, 0, 0, 0.4);
 }
 
 .language-btn:active {
-  transform: translateY(-2px) scale(1.02);
+  transform: translateY(-4px) scale(1.02);
 }
 
+/* Waving Flag Container */
 .flag-icon {
-  font-size: 3.5rem;
-  filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.3));
-  transition: transform 0.4s ease;
+  width: 120px;
+  height: 80px;
+  position: relative;
+  perspective: 1000px;
+  filter: drop-shadow(0 8px 16px rgba(0, 0, 0, 0.4));
 }
 
-.language-btn:hover .flag-icon {
-  transform: scale(1.15);
+/* Flag waves */
+.flag-wave {
+  width: 100%;
+  height: 100%;
+  position: relative;
+  transform-style: preserve-3d;
+  animation: wave 3s ease-in-out infinite;
+  border-radius: 4px;
+  overflow: hidden;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3),
+              inset 0 1px 0 rgba(255, 255, 255, 0.1);
+}
+
+/* Fabric texture overlay */
+.flag-wave::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image: 
+    repeating-linear-gradient(90deg, 
+      transparent 0px, 
+      rgba(0, 0, 0, 0.03) 1px, 
+      transparent 2px),
+    repeating-linear-gradient(0deg, 
+      transparent 0px, 
+      rgba(0, 0, 0, 0.03) 1px, 
+      transparent 2px);
+  background-size: 2px 2px;
+  opacity: 0.5;
+  pointer-events: none;
+  z-index: 1;
+}
+
+@keyframes wave {
+  0%, 100% {
+    transform: rotateY(-5deg) rotateX(2deg);
+  }
+  25% {
+    transform: rotateY(5deg) rotateX(-2deg);
+  }
+  50% {
+    transform: rotateY(-3deg) rotateX(1deg);
+  }
+  75% {
+    transform: rotateY(3deg) rotateX(-1deg);
+  }
+}
+
+/* English Flag (St George's Cross simplified - using UK colors) */
+.flag-uk {
+  background: linear-gradient(to bottom,
+    #012169 0%, #012169 33%,
+    white 33%, white 40%,
+    #C8102E 40%, #C8102E 60%,
+    white 60%, white 67%,
+    #012169 67%, #012169 100%
+  );
+  position: relative;
+}
+
+/* Shimmer layers for all flags */
+.flag-wave::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(90deg,
+    transparent 0%,
+    rgba(255, 255, 255, 0.3) 50%,
+    transparent 100%
+  );
+  animation: shimmer 4s ease-in-out infinite;
+  z-index: 2;
+  pointer-events: none;
+}
+
+.flag-russia::after {
+  animation-delay: 0.5s;
+}
+
+.flag-ukraine::after {
+  animation-delay: 1s;
+}
+
+@keyframes shimmer {
+  0%, 100% {
+    transform: translateX(-100%);
+    opacity: 0;
+  }
+  50% {
+    transform: translateX(100%);
+    opacity: 1;
+  }
+}
+
+/* Russian Flag */
+.flag-russia {
+  background: linear-gradient(to bottom,
+    #FFFFFF 0%, #FFFFFF 33.33%,
+    #0039A6 33.33%, #0039A6 66.66%,
+    #D52B1E 66.66%, #D52B1E 100%
+  );
+  position: relative;
+}
+
+/* Ukrainian Flag */
+.flag-ukraine {
+  background: linear-gradient(to bottom,
+    #0057B7 0%, #0057B7 50%,
+    #FFD700 50%, #FFD700 100%
+  );
+  position: relative;
+}
+
+/* Wave ripple effect */
+.flag-icon::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg,
+    transparent 0%,
+    rgba(255, 255, 255, 0.15) 25%,
+    transparent 50%,
+    rgba(0, 0, 0, 0.1) 75%,
+    transparent 100%
+  );
+  animation: waveRipple 6s linear infinite;
+  pointer-events: none;
+  border-radius: 4px;
+  z-index: 3;
+}
+
+@keyframes waveRipple {
+  0% {
+    transform: translateX(0) scaleY(1);
+  }
+  25% {
+    transform: translateX(25%) scaleY(0.98);
+  }
+  50% {
+    transform: translateX(50%) scaleY(1.02);
+  }
+  75% {
+    transform: translateX(75%) scaleY(0.99);
+  }
+  100% {
+    transform: translateX(100%) scaleY(1);
+  }
+}
+
+/* Flag pole */
+.flag-icon::before {
+  content: '';
+  position: absolute;
+  left: -8px;
+  top: -10px;
+  bottom: -10px;
+  width: 3px;
+  background: linear-gradient(180deg, #8b7355 0%, #6b5944 100%);
+  border-radius: 2px;
+  box-shadow: -1px 0 3px rgba(0, 0, 0, 0.3);
+  z-index: -1;
+}
+
+.language-btn:hover .flag-wave {
+  animation: wave 1.5s ease-in-out infinite, bounce 0.6s ease-out;
+}
+
+@keyframes bounce {
+  0%, 100% { transform: rotateY(0deg) rotateX(0deg); }
+  50% { transform: rotateY(10deg) rotateX(-5deg) scale(1.05); }
 }
 
 .lang-name {
@@ -453,6 +660,7 @@ body::before {
   font-weight: 600;
   color: var(--text-primary);
   letter-spacing: 0.05em;
+  text-transform: uppercase;
 }
 
 /* Animation for selected language */
@@ -1846,22 +2054,27 @@ footer {
   
   .language-buttons {
     flex-direction: column;
-    gap: 20px;
+    gap: 25px;
     align-items: center;
   }
   
   .language-btn {
-    min-width: 200px;
-    padding: 20px 30px;
+    min-width: 220px;
+    padding: 25px 30px;
   }
   
   .flag-icon {
-    font-size: 3rem;
+    width: 100px;
+    height: 66px;
   }
   
   .language-selection h3 {
     font-size: 1rem;
     padding: 0 20px;
+  }
+  
+  .lang-name {
+    font-size: 1rem;
   }
 }
 
@@ -1987,15 +2200,21 @@ footer {
       <h3 id="choose-language-text">Choose Your Language • Выберите язык • Оберіть мову</h3>
       <div class="language-buttons">
         <button class="language-btn" data-lang="en" aria-label="English">
-          <div class="flag-icon">🇬🇧</div>
+          <div class="flag-icon">
+            <div class="flag-wave flag-uk"></div>
+          </div>
           <div class="lang-name">English</div>
         </button>
         <button class="language-btn" data-lang="ru" aria-label="Russian">
-          <div class="flag-icon">🇷🇺</div>
+          <div class="flag-icon">
+            <div class="flag-wave flag-russia"></div>
+          </div>
           <div class="lang-name">Русский</div>
         </button>
         <button class="language-btn" data-lang="uk" aria-label="Ukrainian">
-          <div class="flag-icon">🇺🇦</div>
+          <div class="flag-icon">
+            <div class="flag-wave flag-ukraine"></div>
+          </div>
           <div class="lang-name">Українська</div>
         </button>
       </div>
